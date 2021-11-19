@@ -1,4 +1,3 @@
-
 class PhemexAPIException(Exception):
 
     def __init__(self, response):

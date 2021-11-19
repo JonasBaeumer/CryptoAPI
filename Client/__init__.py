@@ -1,16 +1,13 @@
 import hashlib
 import hmac
 from math import trunc
-from threading import Thread
-import requests
 import json
 import time
 
-from .exceptions import PhemexAPIException
+from Client.phemexexception.exceptions import PhemexAPIException
 
 
 class Client(object):
-
     MAIN_NET_API_URL = 'https://api.phemex.com'
     TEST_NET_API_URL = 'https://testnet-api.phemex.com'
 
@@ -39,7 +36,6 @@ class Client(object):
     ORDER_STATUS_TRIGGERED = "Triggered"
     ORDER_STATUS_UNTRIGGERED = "Untriggered"
 
-
     def _send_request(self, method, endpoint, params={}, body={}):
         """
         A generic method to send a request to the Phemex API server
@@ -50,21 +46,21 @@ class Client(object):
         :return: JSON Message Object containing the details of the reply
         """
 
-        #Get the current time for expiry
+        # Get the current time for expiry
         expiry = str(trunc(time.time()) + 60)
-        #Create the query string from the given method arguments
+        # Create the query string from the given method arguments
         query_string = '&'.join(['{}={}'.format(k, v) for k, v in params.items()])
-        #Create the message for the signature encoding later
+        # Create the message for the signature encoding later
         message = endpoint + query_string + expiry
-        #Create a message body in JSON format
+        # Create a message body in JSON format
         body_str = ""
         if body:
             body_str = json.dumps(body, separators=(',', ':'))
             message += body_str
-        #Create the signature using the API secret plus message
+        # Create the signature using the API secret plus message
         signature = hmac.new(self.api_secret.encode('utf-8'), message.encode('utf-8'), hashlib.sha256)
 
-        #Update the request header (JSON)
+        # Update the request header (JSON)
         self.session.headers.update({
             'x-phemex-request-signature': signature.hexdigest(),
             'x-phemex-request-expiry': expiry,
@@ -75,7 +71,7 @@ class Client(object):
         if query_string:
             url += '?' + query_string
 
-        #Get and return the response from the Phemex API server
+        # Get and return the response from the Phemex API server
         response = self.session.request(method, url, data=body_str.encode())
         if not str(response.status_code).startswith('2'):
             raise PhemexAPIException(response)
@@ -89,7 +85,6 @@ class Client(object):
             raise PhemexAPIException(response)
         return res_json
 
-
     def getP_and_L(self):
         """
         Retrieve the P&L Data from the Server
@@ -98,37 +93,27 @@ class Client(object):
         request_path = "/accounts/accountPositions"
         pair_path = "currency=BTC"
         expiry = 1575735514
-        message = '{} {} {}'.format(website_path, request_path, "hello") # Example how to get it in json format
+        message = '{} {} {}'.format(website_path, request_path, "hello")  # Example how to get it in json format
         API_Secret = None
-        signature = hmac.new(bytes(request_path + pair_path + expiry, 'latin-1'), msg = bytes(message, 'latin-1'), digestmod=hashlib.sha256()).hexdigest().upper()
-        Header = RequestObjectHeader(None, 1575735514, signature)
+        signature = hmac.new(bytes(request_path + pair_path + expiry, 'latin-1'), msg=bytes(message, 'latin-1'),
+                             digestmod=hashlib.sha256()).hexdigest().upper()
 
-        try:
-            # data contains the request body
-            response = requests.get(website_path + request_path + "?currency=BTC", headers = {}, data = {}).
+    """ BELOW WILL BE SOME INITIAL METHODS FOR TESTING THE SECURITY ENDPOINTS ACCESS"""
 
-            if response.status_code != 200:
-                update_lb = True
-
-
-
-class RequestObject(object):
-
-    def __int__(self):
-        self.__header = None
-        self.__body = None
-
-class RequestObjectHeader(object):
-
-    def __init__(self, accesstoken, expiry, signature):
-        self.__x_phemex_access_token = accesstoken
-        self.__x_phemex_request_expiry = expiry  # Usually (Now() + 1 minute)
-        self.__x_phemex_request_signature = signature # HMAC SHA256(URL PATH + Query String + Expiry + body)
-
+    def get_Balance_Test(self):
         """
-        Optional header
-        self.__x_phemex_request_tracing = None # Uniqure String to trace Http Requests (< 40 bytes)
+        :return: The Current Account Balance in BTC
         """
+        website_path = "https://api.phemex.com"
+        request_path = "/accounts/accountPositions"
+        request_query = "currency=BTC"
+        expiry = 1575735514
+        message = ""
+        signature = hmac.new(bytes(request_path + request_query + expiry, 'latin-1'), msg=bytes(message, 'latin-1'),
+                             digestmod=hashlib.sha256()).hexdigest().upper()
+        print(self._send_request("GET", request_path, request_query, body={}))
 
 
 if __name__ == '__main__':
+    Test_Client = Client()
+    Test_Client.get_Balance_Test()
