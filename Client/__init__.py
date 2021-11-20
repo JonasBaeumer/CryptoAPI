@@ -4,6 +4,8 @@ from math import trunc
 import json
 import time
 
+import requests
+
 from Client.phemexexception.exceptions import PhemexAPIException
 
 
@@ -35,6 +37,15 @@ class Client(object):
     ORDER_STATUS_REJECTED = "Rejected"
     ORDER_STATUS_TRIGGERED = "Triggered"
     ORDER_STATUS_UNTRIGGERED = "Untriggered"
+
+    def __init__(self, api_key=None, api_secret=None, is_testnet=False):
+        self.api_key = api_key
+        self.api_secret = api_secret
+        self.api_URL = self.MAIN_NET_API_URL
+        if is_testnet:
+            self.api_URL = self.TEST_NET_API_URL
+
+        self.session = requests.session()
 
     def _send_request(self, method, endpoint, params={}, body={}):
         """
@@ -92,11 +103,9 @@ class Client(object):
         website_path = "https://api.phemex.com"
         request_path = "/accounts/accountPositions"
         pair_path = "currency=BTC"
-        expiry = 1575735514
+        expiry = "1575735514"
         message = '{} {} {}'.format(website_path, request_path, "hello")  # Example how to get it in json format
         API_Secret = None
-        signature = hmac.new(bytes(request_path + pair_path + expiry, 'latin-1'), msg=bytes(message, 'latin-1'),
-                             digestmod=hashlib.sha256()).hexdigest().upper()
 
     """ BELOW WILL BE SOME INITIAL METHODS FOR TESTING THE SECURITY ENDPOINTS ACCESS"""
 
@@ -107,13 +116,13 @@ class Client(object):
         website_path = "https://api.phemex.com"
         request_path = "/accounts/accountPositions"
         request_query = "currency=BTC"
-        expiry = 1575735514
-        message = ""
-        signature = hmac.new(bytes(request_path + request_query + expiry, 'latin-1'), msg=bytes(message, 'latin-1'),
-                             digestmod=hashlib.sha256()).hexdigest().upper()
+        expiry = "1575735514"
         print(self._send_request("GET", request_path, request_query, body={}))
 
 
 if __name__ == '__main__':
-    Test_Client = Client()
+
+    test_api_Secret = "Base64::urlDecode(API Secret)"
+
+    Test_Client = Client(api_secret=test_api_Secret)
     Test_Client.get_Balance_Test()
