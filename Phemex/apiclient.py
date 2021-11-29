@@ -1,3 +1,4 @@
+from Phemex.phemexexception.exceptions import PhemexAPIException
 import hashlib
 import hmac
 from math import trunc
@@ -6,10 +7,8 @@ import time
 
 import requests
 
-from Client.phemexexception.exceptions import PhemexAPIException
 
-
-class Client(object):
+class APIClient(object):
     MAIN_NET_API_URL = 'https://api.phemex.com'
     TEST_NET_API_URL = 'https://testnet-api.phemex.com'
 
@@ -96,33 +95,71 @@ class Client(object):
             raise PhemexAPIException(response)
         return res_json
 
-    def getP_and_L(self):
+    def query_account_n_positions(self, currency: str):
         """
-        Retrieve the P&L Data from the Server
+        https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#querytradeaccount
         """
-        website_path = "https://api.phemex.com"
-        request_path = "/accounts/accountPositions"
-        pair_path = "currency=BTC"
-        expiry = "1575735514"
-        message = '{} {} {}'.format(website_path, request_path, "hello")  # Example how to get it in json format
-        API_Secret = None
+        return self._send_request("get", "/accounts/accountPositions", {'currency': currency})
 
-    """ BELOW WILL BE SOME INITIAL METHODS FOR TESTING THE SECURITY ENDPOINTS ACCESS"""
-
-    def get_Balance_Test(self):
+    def place_order(self, params={}):
         """
-        :return: The Current Account Balance in BTC
+        https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#placeorder
         """
-        website_path = "https://api.phemex.com"
-        request_path = "/accounts/accountPositions"
-        request_query = "currency=BTC"
-        expiry = "1575735514"
-        print(self._send_request("GET", request_path, request_query, body={}))
+        return self._send_request("post", "/orders", body=params)
+
+    def amend_order(self, symbol, orderID, params={}):
+        """
+        https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#622-amend-order-by-orderid
+        """
+        params["symbol"] = symbol
+        params["orderID"] = orderID
+        return self._send_request("put", "/orders/replace", params=params)
+
+    def cancel_order(self, symbol, orderID):
+        """
+        https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#623-cancel-single-order
+        """
+        return self._send_request("delete", "/orders/cancel", params={"symbol": symbol, "orderID": orderID})
+
+    def _cancel_all(self, symbol, untriggered_order=False):
+        """
+        https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#625-cancel-all-orders
+        """
+        return self._send_request("delete", "/orders/all",
+                                  params={"symbol": symbol, "untriggered": str(untriggered_order).lower()})
+
+    def cancel_all_normal_orders(self, symbol):
+        self._cancel_all(symbol, untriggered_order=False)
+
+    def cancel_all_untriggered_conditional_orders(self, symbol):
+        self._cancel_all(symbol, untriggered_order=True)
+
+    def cancel_all(self, symbol):
+        self._cancel_all(symbol, untriggered_order=False)
+        self._cancel_all(symbol, untriggered_order=True)
+
+    def change_leverage(self, symbol, leverage=0):
+        """
+        https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#627-change-leverage
+        """
+        return self._send_request("PUT", "/positions/leverage", params={"symbol": symbol, "leverage": leverage})
+
+    def change_risklimit(self, symbol, risk_limit=0):
+        """
+        https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#628-change-position-risklimit
+        """
+        return self._send_request("PUT", "/positions/riskLimit", params={"symbol": symbol, "riskLimit": risk_limit})
+
+    def query_open_orders(self, symbol):
+        """
+        https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#6210-query-open-orders-by-symbol
+        """
+        return self._send_request("GET", "/orders/activeList", params={"symbol": symbol})
+
+    def query_24h_ticker(self, symbol):
+        """
+        https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#633-query-24-hours-ticker
+        """
+        return self._send_request("GET", "/md/ticker/24hr", params={"symbol": symbol})
 
 
-if __name__ == '__main__':
-
-    test_api_Secret = "Base64::urlDecode(API Secret)"
-
-    Test_Client = Client(api_secret=test_api_Secret)
-    Test_Client.get_Balance_Test()
