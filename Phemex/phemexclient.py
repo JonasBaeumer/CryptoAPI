@@ -55,7 +55,7 @@ class PhemexClient(object):
 
         balance_usd_swing_contract = (response_usd_swing.get('data', 'no entry found') \
                        .get('account', 'no entry found') \
-                       .get('accountBalanceEv', 'no entry found') / 10000)
+                       .get('accountBalanceEv', 'no entry found ') / 10000)
 
         print("The BTC account balance (Contract) is: " + str(balance_btc_swing_contract))
         print("The USD account balance (Contract) is: " + str(balance_usd_swing_contract))
