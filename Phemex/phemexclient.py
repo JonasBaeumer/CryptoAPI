@@ -30,8 +30,16 @@ class PhemexClient(object):
 
     def get_Account_Balance(self):
         # Get account and positions for Main Account
-        response_btc_main = self.client_main.query_account_n_positions(APIClient.CURRENCY_BTC)
-        response_usd_main = self.client_main.query_account_n_positions(APIClient.CURRENCY_USD)
+
+        for i in range(len(self.clients)):
+            response_client_btc = self.clients[i].query_account_n_positions(APIClient.CURRENCY_BTC)
+            response_client_usd = self.clients[i].query_account_n_positions(APIClient.CURRENCY_USD)
+            account_number = response_client_btc.get('data').get('account').get('accountId')
+            btc_balance = response_client_btc.get('data').get('account').get('accountBalanceEv') / 100000000
+            usd_balance = response_client_usd.get('data').get('account').get('accountBalanceEv') / 10000
+            print('ACCOUNT BALANCES FOR ACC.NR ' + str(account_number))
+            print('BTC: ' + str(btc_balance))
+            print('USD: ' + str(usd_balance))
 
         # Get account and position for SWING Account
         response_btc_swing = self.client_swing.query_account_n_positions(APIClient.CURRENCY_BTC)
