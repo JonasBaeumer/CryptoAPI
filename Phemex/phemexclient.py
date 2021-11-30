@@ -12,18 +12,21 @@ class PhemexClient(object):
 
     api_keys = ['0']
     api_secrets = ['0']
-    client_main = None
-    client_swing = None
+    clients = [APIClient()]
     doc_size = None
     doc_path = '/Users/jonasb./PycharmProjects/PhemexAPI/data'
 
     def __init__(self):
-        self.client_main = APIClient(self.api_key_main, self.api_secret_main)  # -> MainNetClient
-        self.client_swing = APIClient(self.api_key_swing, self.api_secret_swing)
         self.doc_size = rawcount('/Users/jonasb./PycharmProjects/PhemexAPI/data')
         for i in range(1, int(self.doc_size), 3):
-            self.api_keys.append(linecache.getline(self.doc_path, i + 1).rstrip("\n"))
-            self.api_secrets.append(linecache.getline(self.doc_path, i + 2).rstrip("\n"))
+            api_key = linecache.getline(self.doc_path, i + 1).rstrip("\n")
+            api_secret = linecache.getline(self.doc_path, i + 2).rstrip("\n")
+            self.api_keys.append(api_key)
+            self.api_secrets.append(api_secret)
+            self.clients.append(APIClient(api_key, api_secret))
+        self.api_keys.remove('0')
+        self.api_secrets.remove('0')
+        self.clients.pop(0)
 
     def get_Account_Balance(self):
         # Get account and positions for Main Account
