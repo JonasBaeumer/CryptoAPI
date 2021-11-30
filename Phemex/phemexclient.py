@@ -9,36 +9,56 @@ sys.path.append(dir_path + "/../")
 
 
 class PhemexClient(object):
-    api_key = None
-    api_secret = None
-    client = None
+    api_key_main = None
+    api_key_swing = None
+    api_secret_main = None
+    api_secret_swing = None
+    client_main = None
+    client_swing = None
 
     def __init__(self):
-        self.api_key = linecache.getline('/Users/jonasb./PycharmProjects/PhemexAPI/data', 1).rstrip("\n")
-        self.api_secret = linecache.getline('/Users/jonasb./PycharmProjects/PhemexAPI/data', 2).rstrip("\n")
-        self.client = APIClient(self.api_key, self.api_secret)  # -> MainNetClient
+        self.api_key_main = linecache.getline('/Users/jonasb./PycharmProjects/PhemexAPI/data', 2).rstrip("\n")
+        self.api_key_swing = linecache.getline('/Users/jonasb./PycharmProjects/PhemexAPI/data', 5).rstrip("\n")
+        self.api_secret_main = linecache.getline('/Users/jonasb./PycharmProjects/PhemexAPI/data', 3).rstrip("\n")
+        self.api_secret_swing = linecache.getline('/Users/jonasb./PycharmProjects/PhemexAPI/data', 6).rstrip("\n")
+        self.client_main = APIClient(self.api_key_main, self.api_secret_main)  # -> MainNetClient
+        self.client_swing = APIClient(self.api_key_swing, self.api_secret_swing)
 
     def get_Account_Balance(self):
-        # Get account and positions
-        response_btc = self.client.query_account_n_positions(APIClient.CURRENCY_BTC)
-        response_usd = self.client.query_account_n_positions(APIClient.CURRENCY_USD)
+        # Get account and positions for Main Account
+        response_btc_main = self.client_main.query_account_n_positions(APIClient.CURRENCY_BTC)
+        response_usd_main = self.client_main.query_account_n_positions(APIClient.CURRENCY_USD)
 
+        # Get account and position for SWING Account
+        response_btc_swing = self.client_swing.query_account_n_positions(APIClient.CURRENCY_BTC)
+        response_usd_swing = self.client_swing.query_account_n_positions(APIClient.CURRENCY_USD)
         """
         From the official documentation:
         -> Fields with post-fix "Ev" are scaled values
         E.g. the account balance is written in Satoshis (1 BTC = 100.000.000 sats) 
         """
 
-        balance_btc_contract = (response_btc.get('data', 'no entry found') \
+        balance_btc_main_contract = (response_btc_main.get('data', 'no entry found') \
                        .get('account', 'no entry found') \
                        .get('accountBalanceEv', 'no entry found') / 100000000)
 
-        balance_usd_contract = (response_usd.get('data', 'no entry found') \
+        balance_usd_main_contract = (response_usd_main.get('data', 'no entry found') \
                        .get('account', 'no entry found') \
                        .get('accountBalanceEv', 'no entry found') / 10000)
 
-        print("The BTC account balance (Contract) is: " + str(balance_btc_contract))
-        print("The USD account balance (Contract) is: " + str(balance_usd_contract))
+        print("The BTC account balance (Contract) is: " + str(balance_btc_main_contract))
+        print("The USD account balance (Contract) is: " + str(balance_usd_main_contract))
+
+        balance_btc_swing_contract = (response_btc_swing.get('data', 'no entry found') \
+                       .get('account', 'no entry found') \
+                       .get('accountBalanceEv', 'no entry found') / 100000000)
+
+        balance_usd_swing_contract = (response_usd_swing.get('data', 'no entry found') \
+                       .get('account', 'no entry found') \
+                       .get('accountBalanceEv', 'no entry found') / 10000)
+
+        print("The BTC account balance (Contract) is: " + str(balance_btc_swing_contract))
+        print("The USD account balance (Contract) is: " + str(balance_usd_swing_contract))
 
         try:
             r = self.client.query_account_n_positions("BTC1")
