@@ -29,48 +29,24 @@ class PhemexClient(object):
         self.clients.pop(0)
 
     def get_Account_Balance(self):
-        # Get account and positions for Main Account
+        """
+        :return: The balances of all stored (sub) accounts in BTC and USD
+        """
 
         for i in range(len(self.clients)):
             response_client_btc = self.clients[i].query_account_n_positions(APIClient.CURRENCY_BTC)
             response_client_usd = self.clients[i].query_account_n_positions(APIClient.CURRENCY_USD)
             account_number = response_client_btc.get('data').get('account').get('accountId')
+            """
+                From the official documentation:
+                -> Fields with post-fix "Ev" are scaled values
+                E.g. the account balance is written in Satoshis (1 BTC = 100.000.000 sats) 
+            """
             btc_balance = response_client_btc.get('data').get('account').get('accountBalanceEv') / 100000000
             usd_balance = response_client_usd.get('data').get('account').get('accountBalanceEv') / 10000
             print('ACCOUNT BALANCES FOR ACC.NR ' + str(account_number))
             print('BTC: ' + str(btc_balance))
             print('USD: ' + str(usd_balance))
-
-        # Get account and position for SWING Account
-        response_btc_swing = self.client_swing.query_account_n_positions(APIClient.CURRENCY_BTC)
-        response_usd_swing = self.client_swing.query_account_n_positions(APIClient.CURRENCY_USD)
-        """
-        From the official documentation:
-        -> Fields with post-fix "Ev" are scaled values
-        E.g. the account balance is written in Satoshis (1 BTC = 100.000.000 sats) 
-        """
-
-        balance_btc_main_contract = (response_btc_main.get('data', 'no entry found') \
-                                     .get('account', 'no entry found') \
-                                     .get('accountBalanceEv', 'no entry found') / 100000000)
-
-        balance_usd_main_contract = (response_usd_main.get('data', 'no entry found') \
-                                     .get('account', 'no entry found') \
-                                     .get('accountBalanceEv', 'no entry found') / 10000)
-
-        print("The BTC account balance (Contract) is: " + str(balance_btc_main_contract))
-        print("The USD account balance (Contract) is: " + str(balance_usd_main_contract))
-
-        balance_btc_swing_contract = (response_btc_swing.get('data', 'no entry found') \
-                                      .get('account', 'no entry found') \
-                                      .get('accountBalanceEv', 'no entry found') / 100000000)
-
-        balance_usd_swing_contract = (response_usd_swing.get('data', 'no entry found') \
-                                      .get('account', 'no entry found') \
-                                      .get('accountBalanceEv', 'no entry found ') / 10000)
-
-        print("The BTC account balance (Contract) is: " + str(balance_btc_swing_contract))
-        print("The USD account balance (Contract) is: " + str(balance_usd_swing_contract))
 
         try:
             r = self.client.query_account_n_positions("BTC1")
