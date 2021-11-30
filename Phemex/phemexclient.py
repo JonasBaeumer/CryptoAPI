@@ -20,10 +20,25 @@ class PhemexClient(object):
 
     def get_Account_Balance(self):
         # Get account and positions
-        balancebtc = self.client.query_account_n_positions(APIClient.CURRENCY_BTC)
-        balanceusd = self.client.query_account_n_positions(APIClient.CURRENCY_USD)
-        print("The accounts BTC balance is: " + balancebtc)
-        print("The accounts BTC balance is: " + balanceusd)
+        response_btc = self.client.query_account_n_positions(APIClient.CURRENCY_BTC)
+        response_usd = self.client.query_account_n_positions(APIClient.CURRENCY_USD)
+
+        """
+        From the official documentation:
+        -> Fields with post-fix "Ev" are scaled values
+        E.g. the account balance is written in Satoshis (1 BTC = 100.000.000 sats) 
+        """
+
+        balance_btc_contract = (response_btc.get('data', 'no entry found') \
+                       .get('account', 'no entry found') \
+                       .get('accountBalanceEv', 'no entry found') / 100000000)
+
+        balance_usd_contract = (response_usd.get('data', 'no entry found') \
+                       .get('account', 'no entry found') \
+                       .get('accountBalanceEv', 'no entry found') / 10000)
+
+        print("The BTC account balance (Contract) is: " + str(balance_btc_contract))
+        print("The USD account balance (Contract) is: " + str(balance_usd_contract))
 
         try:
             r = self.client.query_account_n_positions("BTC1")
