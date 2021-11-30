@@ -9,20 +9,21 @@ sys.path.append(dir_path + "/../")
 
 
 class PhemexClient(object):
-    api_key_main = None
-    api_key_swing = None
-    api_secret_main = None
-    api_secret_swing = None
+
+    api_keys = ['0']
+    api_secrets = ['0']
     client_main = None
     client_swing = None
+    doc_size = None
+    doc_path = '/Users/jonasb./PycharmProjects/PhemexAPI/data'
 
     def __init__(self):
-        self.api_key_main = linecache.getline('/Users/jonasb./PycharmProjects/PhemexAPI/data', 2).rstrip("\n")
-        self.api_key_swing = linecache.getline('/Users/jonasb./PycharmProjects/PhemexAPI/data', 5).rstrip("\n")
-        self.api_secret_main = linecache.getline('/Users/jonasb./PycharmProjects/PhemexAPI/data', 3).rstrip("\n")
-        self.api_secret_swing = linecache.getline('/Users/jonasb./PycharmProjects/PhemexAPI/data', 6).rstrip("\n")
         self.client_main = APIClient(self.api_key_main, self.api_secret_main)  # -> MainNetClient
         self.client_swing = APIClient(self.api_key_swing, self.api_secret_swing)
+        self.doc_size = rawcount('/Users/jonasb./PycharmProjects/PhemexAPI/data')
+        for i in range(1, int(self.doc_size), 3):
+            self.api_keys.append(linecache.getline(self.doc_path, i + 1).rstrip("\n"))
+            self.api_secrets.append(linecache.getline(self.doc_path, i + 2).rstrip("\n"))
 
     def get_Account_Balance(self):
         # Get account and positions for Main Account
@@ -39,23 +40,23 @@ class PhemexClient(object):
         """
 
         balance_btc_main_contract = (response_btc_main.get('data', 'no entry found') \
-                       .get('account', 'no entry found') \
-                       .get('accountBalanceEv', 'no entry found') / 100000000)
+                                     .get('account', 'no entry found') \
+                                     .get('accountBalanceEv', 'no entry found') / 100000000)
 
         balance_usd_main_contract = (response_usd_main.get('data', 'no entry found') \
-                       .get('account', 'no entry found') \
-                       .get('accountBalanceEv', 'no entry found') / 10000)
+                                     .get('account', 'no entry found') \
+                                     .get('accountBalanceEv', 'no entry found') / 10000)
 
         print("The BTC account balance (Contract) is: " + str(balance_btc_main_contract))
         print("The USD account balance (Contract) is: " + str(balance_usd_main_contract))
 
         balance_btc_swing_contract = (response_btc_swing.get('data', 'no entry found') \
-                       .get('account', 'no entry found') \
-                       .get('accountBalanceEv', 'no entry found') / 100000000)
+                                      .get('account', 'no entry found') \
+                                      .get('accountBalanceEv', 'no entry found') / 100000000)
 
         balance_usd_swing_contract = (response_usd_swing.get('data', 'no entry found') \
-                       .get('account', 'no entry found') \
-                       .get('accountBalanceEv', 'no entry found ') / 10000)
+                                      .get('account', 'no entry found') \
+                                      .get('accountBalanceEv', 'no entry found ') / 10000)
 
         print("The BTC account balance (Contract) is: " + str(balance_btc_swing_contract))
         print("The USD account balance (Contract) is: " + str(balance_usd_swing_contract))
@@ -151,3 +152,26 @@ class PhemexClient(object):
             print(self.client.query_24h_ticker("BTCUSD"))
         except APIClient.phemexexception.exceptions.PhemexAPIException as e:
             print(e)
+
+
+########## HELPER METHODS BELOW #########
+
+def rawcount(filename):
+    """
+    FROM https://stackoverflow.com/questions/845058/how-to-get-line-count-of-a-large-file-cheaply-in-python
+    Works faster with byte counters (only Python3) than traditional line counting methods
+
+    :param filename: (str) - full file path
+    :returns number of lines the document has
+    """
+    f = open(filename, 'rb')
+    lines = 0
+    buf_size = 1024 * 1024
+    read_f = f.raw.read
+
+    buf = read_f(buf_size)
+    while buf:
+        lines += buf.count(b'\n')
+        buf = read_f(buf_size)
+
+    return lines + 1 #Because lastline does not have line seperator
