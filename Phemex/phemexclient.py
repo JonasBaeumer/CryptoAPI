@@ -1,3 +1,6 @@
+import csv
+from datetime import date
+
 from Phemex.apiclient import APIClient
 import linecache
 import os
@@ -9,18 +12,18 @@ sys.path.append(dir_path + "/../")
 
 
 class PhemexClient(object):
-
     api_keys = ['0']
     api_secrets = ['0']
     clients = [APIClient()]
     doc_size = None
-    doc_path = '/Users/jonasb./PycharmProjects/PhemexAPI/data'
+    data_doc_path = '/Users/jonasb./PycharmProjects/PhemexAPI/data'
+    account_balance_doc_path = '/Users/jonasb./PycharmProjects/PhemexAPI/account_balance'
 
     def __init__(self):
         self.doc_size = rawcount('/Users/jonasb./PycharmProjects/PhemexAPI/data')
         for i in range(1, int(self.doc_size), 3):
-            api_key = linecache.getline(self.doc_path, i + 1).rstrip("\n")
-            api_secret = linecache.getline(self.doc_path, i + 2).rstrip("\n")
+            api_key = linecache.getline(self.data_doc_path, i + 1).rstrip("\n")
+            api_secret = linecache.getline(self.data_doc_path, i + 2).rstrip("\n")
             self.api_keys.append(api_key)
             self.api_secrets.append(api_secret)
             self.clients.append(APIClient(api_key, api_secret))
@@ -47,6 +50,10 @@ class PhemexClient(object):
             print('ACCOUNT BALANCES FOR ACC.NR ' + str(account_number))
             print('BTC: ' + str(btc_balance))
             print('USD: ' + str(usd_balance))
+
+            # data = [date.today().strftime("%d/%m/%Y"), account_number, btc_balance, usd_balance]
+            write_to_csv_file(self.account_balance_doc_path, data=[date.today().strftime("%d/%m/%Y")
+                , account_number, btc_balance, usd_balance])
 
         try:
             r = self.client.query_account_n_positions("BTC1")
@@ -161,4 +168,18 @@ def rawcount(filename):
         lines += buf.count(b'\n')
         buf = read_f(buf_size)
 
-    return lines + 1 #Because lastline does not have line seperator
+    return lines + 1  # Because lastline does not have line seperator
+
+
+def write_to_csv_file(filepath, data=[]):
+    """
+    from https://www.pythontutorial.net/python-basics/python-write-csv-file/
+    :param filepath: The filepath that the data shall be written to
+    :param data: [date,account_number,balance,currency]
+    :return: TRUE/FALSE (depending on writing success)
+    """
+    with open(filepath, 'w', encoding='UTF-8', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(data)
+
+    return True
