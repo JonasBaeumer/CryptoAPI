@@ -1,4 +1,5 @@
 import csv
+import datetime
 
 """
 This class is supposed to handle all related issues with writing the recieved data from the phemex api to a specific file 
@@ -22,12 +23,12 @@ class Writer(object):
     def _write_to_csv_file(self, data=[]):
         """
         This method takes a given data input and writes it into the desired csv file
+
         from https://www.pythontutorial.net/python-basics/python-write-csv-file/
         :param data: [date,account_number,balance,currency]
         :return: TRUE/FALSE (depending on writing success)
         """
         with open(self.filepath, 'r+', encoding='UTF-8', newline='') as file:
-
             """
             from: https://stackoverflow.com/questions/27504056/row-count-in-a-csv-file#:~:text=Then%20use%20the%20csv.reader%20for%20open%20the%20csv,%3D%20csv.reader%20%28input_file%29%20value%20%3D%20len%20%28list%20%28reader_file%29%29
             """
@@ -35,16 +36,17 @@ class Writer(object):
             data_from_file = list(reader)
             row_count = len(data_from_file)
 
-            #TODO: Delete later
+            # TODO: Delete later
             print(row_count)
 
         with open(self.filepath, 'a', encoding='UTF-8', newline='') as file:
-
-            #TODO: Delete later
+            # TODO: Delete later
             print(self._string_to_list(data))
-            file.write(self._string_to_list(data) + '\n')
 
-            return True
+            if not self._check_for_duplicate_date_entry(data_from_file):
+
+                file.write(self._string_to_list(data) + '\n')
+                return True
 
         return False
 
@@ -55,13 +57,28 @@ class Writer(object):
         :return: TRUE/FALSE (depending on writing success)
         """
         with open(self.filepath_TEST, 'r+', encoding='UTF-8', newline='') as file:
-            reader = csv.reader(file, delimiter= '', quotechar='|')
+            reader = csv.reader(file, delimiter='', quotechar='|')
             for row in reader:
                 print(','.join(row))
             writer = csv.writer(file)
             writer.writerow(data)
 
         return True
+
+    def _check_for_duplicate_date_entry(self, data=[]):
+        """
+        :param data: A list with rows from the csv file to be checked
+        :return: TRUE/FALSE if the current date time is already saved as a row (to prevent duplicate entries)
+        """
+
+        current_date = datetime.datetime.now()
+        date_string = datetime.date.strftime(current_date, '%d.%m.%Y')
+
+        for i in range(0, len(data)):
+            if date_string in data[i]:
+                return True
+
+        return False
 
     def _string_to_list(self, data=[]):
         """
@@ -71,4 +88,3 @@ class Writer(object):
         :return: str (with the concatenated fields of the data list)
         """
         return ','.join(data)
-

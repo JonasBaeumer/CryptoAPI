@@ -2,6 +2,7 @@ import csv
 from datetime import date
 
 from Phemex.apiclient import APIClient
+from Phemex.JournalWriter.writer import Writer
 import linecache
 import os
 import sys
@@ -12,12 +13,15 @@ sys.path.append(dir_path + "/../")
 
 
 class PhemexClient(object):
+
     api_keys = ['0']
     api_secrets = ['0']
     clients = [APIClient()]
     doc_size = None
     data_doc_path = '/Users/jonasb./PycharmProjects/PhemexAPI/data'
     account_balance_doc_path = '/Users/jonasb./PycharmProjects/PhemexAPI/account_balance'
+    csv_filepath = 'C:/Users/jbaeu/OneDrive/Desktop/Trading/Trading Journal/data.csv'
+    csv_writer = None
 
     def __init__(self):
         self.doc_size = rawcount('/Users/jonasb./PycharmProjects/PhemexAPI/data')
@@ -30,6 +34,7 @@ class PhemexClient(object):
         self.api_keys.remove('0')
         self.api_secrets.remove('0')
         self.clients.pop(0)
+        self.csv_writer = Writer(self.csv_filepath)
 
     def get_Account_Balance(self):
         """
