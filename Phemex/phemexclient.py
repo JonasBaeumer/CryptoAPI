@@ -13,30 +13,26 @@ sys.path.append(dir_path + "/../")
 
 
 class PhemexClient(object):
-
     api_keys = ['0']
     api_secrets = ['0']
     clients = [APIClient()]
     doc_size = None
-    data_doc_path = '/Users/jonasb./PycharmProjects/PhemexAPI/data'
-    account_balance_doc_path = '/Users/jonasb./PycharmProjects/PhemexAPI/account_balance'
-    csv_filepath = 'C:/Users/jbaeu/OneDrive/Desktop/Trading/Trading Journal/data.csv'
-    csv_writer = None
+    data_doc_path = 'C:/Users/jbaeu/OneDrive/Desktop/Trading/Trading Journal/phemex_login_data.csv'
+    account_balance_doc_path = 'C:/Users/jbaeu/OneDrive/Desktop/Trading/Trading Journal/accumulated_account_balance.csv'
 
     def __init__(self):
-        self.doc_size = rawcount('/Users/jonasb./PycharmProjects/PhemexAPI/data')
-        for i in range(1, int(self.doc_size), 3):
-            api_key = linecache.getline(self.data_doc_path, i + 1).rstrip("\n")
-            api_secret = linecache.getline(self.data_doc_path, i + 2).rstrip("\n")
+        self.doc_size = rawcount(self.data_doc_path)
+        for i in range(0, int(self.doc_size)):
+            api_key = linecache.getline(self.data_doc_path, i+1).rstrip("\n")
+            api_secret = linecache.getline(self.data_doc_path, i+2).rstrip("\n")
             self.api_keys.append(api_key)
             self.api_secrets.append(api_secret)
             self.clients.append(APIClient(api_key, api_secret))
         self.api_keys.remove('0')
         self.api_secrets.remove('0')
         self.clients.pop(0)
-        self.csv_writer = Writer(self.csv_filepath)
 
-    def get_Account_Balance(self):
+    def get_account_balance(self):
         """
         :return: The balances of all stored (sub) accounts in BTC and USD
         """
@@ -57,8 +53,8 @@ class PhemexClient(object):
             print('USD: ' + str(usd_balance))
 
             # data = [date.today().strftime("%d/%m/%Y"), account_number, btc_balance, usd_balance]
-            write_to_csv_file(self.account_balance_doc_path, data=[date.today().strftime("%d/%m/%Y")
-                , account_number, btc_balance, usd_balance])
+            write_to_csv(self.account_balance_doc_path, data=[date.today().strftime("%d/%m/%Y"),
+                                                              account_number, btc_balance, usd_balance])
 
         try:
             r = self.client.query_account_n_positions("BTC1")
@@ -163,28 +159,13 @@ def rawcount(filename):
     :param filename: (str) - full file path
     :returns number of lines the document has
     """
-    f = open(filename, 'rb')
-    lines = 0
-    buf_size = 1024 * 1024
-    read_f = f.raw.read
-
-    buf = read_f(buf_size)
-    while buf:
-        lines += buf.count(b'\n')
-        buf = read_f(buf_size)
-
-    return lines + 1  # Because lastline does not have line seperator
+    with open(filename, 'r+', encoding='UTF-8', newline='') as file:
+        reader = csv.reader(file, delimiter="\n")
+        data_from_file = list(reader)
+        return len(data_from_file) - 1
 
 
-def write_to_csv_file(filepath, data=[]):
-    """
-    from https://www.pythontutorial.net/python-basics/python-write-csv-file/
-    :param filepath: The filepath that the data shall be written to
-    :param data: [date,account_number,balance,currency]
-    :return: TRUE/FALSE (depending on writing success)
-    """
-    with open(filepath, 'w', encoding='UTF-8', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(data)
-
-    return True
+def write_to_csv(filepath, data=[]):
+    writer_client = Writer(filepath)
+    return_value = writer_client._write_to_csv_file(data)
+    return return_value

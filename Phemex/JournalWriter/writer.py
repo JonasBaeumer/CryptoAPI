@@ -28,6 +28,7 @@ class Writer(object):
         :param data: [date,account_number,balance,currency]
         :return: TRUE/FALSE (depending on writing success)
         """
+        _change_data_format(data)
         with open(self.filepath, 'r+', encoding='UTF-8', newline='') as file:
             """
             from: https://stackoverflow.com/questions/27504056/row-count-in-a-csv-file#:~:text=Then%20use%20the%20csv.reader%20for%20open%20the%20csv,%3D%20csv.reader%20%28input_file%29%20value%20%3D%20len%20%28list%20%28reader_file%29%29
@@ -40,8 +41,6 @@ class Writer(object):
             print(row_count)
 
         with open(self.filepath, 'a', encoding='UTF-8', newline='') as file:
-            # TODO: Delete later
-            print(self._string_to_list(data))
 
             if not self._check_for_duplicate_date_entry(data_from_file):
 
@@ -88,3 +87,12 @@ class Writer(object):
         :return: str (with the concatenated fields of the data list)
         """
         return ','.join(data)
+
+
+def _change_data_format(self):
+    date_adjusted = self[0].replace('/', '.')
+    self[0] = date_adjusted
+    self[1] = str(self[1])
+    self[2] = str(self[2])
+    self[3] = 'BTC'
+    return self
