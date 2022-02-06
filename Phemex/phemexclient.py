@@ -47,14 +47,14 @@ class PhemexClient(object):
                 E.g. the account balance is written in Satoshis (1 BTC = 100.000.000 sats) 
             """
             btc_balance = response_client_btc.get('data').get('account').get('accountBalanceEv') / 100000000
-            usd_balance = response_client_usd.get('data').get('account').get('accountBalanceEv') / 10000
+            usd_balance = response_client_usd.get('data').get('account').get('accountBalanceEv') / 10000 #usd_balance currently not in use
             print('ACCOUNT BALANCES FOR ACC.NR ' + str(account_number))
             print('BTC: ' + str(btc_balance))
             print('USD: ' + str(usd_balance))
 
             # data = [date.today().strftime("%d/%m/%Y"), account_number, btc_balance, usd_balance]
-            write_to_csv(self.account_balance_doc_path, data=[date.today().strftime("%d/%m/%Y"),
-                                                              account_number, btc_balance, usd_balance])
+            write_to_csv(self.account_balance_doc_path, data=[date.today().strftime("%d.%m.%Y"),
+                                                              str(account_number), str(btc_balance), 'BTC'])
 
         try:
             r = self.client.query_account_n_positions("BTC1")
