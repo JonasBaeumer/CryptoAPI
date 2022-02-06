@@ -45,7 +45,10 @@ class Writer(object):
             if not self._check_for_duplicate_date_entry(data_from_file):
 
                 file.write(self._string_to_list(data) + '\n')
+                print("Writing successful)")
                 return True
+
+        print("Writing aborted - The File already possessed an entry for this date")
 
         return False
 
@@ -74,7 +77,7 @@ class Writer(object):
         date_string = datetime.date.strftime(current_date, '%d.%m.%Y')
 
         for i in range(0, len(data)):
-            if date_string in data[i]:
+            if date_string in data[i][0]:
                 return True
 
         return False

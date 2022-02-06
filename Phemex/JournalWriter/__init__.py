@@ -2,8 +2,8 @@ from Phemex.JournalWriter.writer import Writer
 
 #TODO: CLASS CAN BE REMOVED AFTER TESTING
 if __name__ == '__main__':
-    writer = Writer("C:/Users/jbaeu/OneDrive/Desktop/Trading/Trading Journal/data.csv")
-    # :param data: [date,account_number,balance,currency]
-    data = ['02.02.2022', '012648673246', '20', 'BTC']
-    writer._write_to_csv_file(data)
+    list = ['06.02.2022,9232830001,0.03567667,BTC', 'abcde']
+    teststring = '06.02.2022'
 
+    for i in range(0, len(list)):
+        print(teststring in list[i])
