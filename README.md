@@ -1,7 +1,11 @@
 # PhemexAPI
 A client to experiment with RESTful API Requests to retrieve data from the phemex crypto trading platform.
 
+Datbase is running on MongoDB that is accessed via RestAPI
+
 Official API Documentation of Phemex: https://github.com/phemex/phemex-api-docs/blob/master/Public-Contract-API-en.md#restapi
+
+Official API Documentation MongoDB: https://docs.mongodb.com/drivers/python/
 
 ## Endpoints
 
