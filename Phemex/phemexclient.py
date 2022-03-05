@@ -48,6 +48,7 @@ class PhemexClient(object):
             E.g. the account balance is written in Satoshis (1 BTC = 100.000.000 sats) 
             """
             btc_balance = response_client_btc.get('data').get('account').get('accountBalanceEv') / 100000000
+            btc_client = response_client_btc.get('data').get('account')
             usd_balance = response_client_usd.get('data').get('account').get('accountBalanceEv') / 10000 #usd_balance currently not in use
             print('ACCOUNT BALANCES FOR ACC.NR ' + str(account_number))
             print('BTC: ' + str(btc_balance))
