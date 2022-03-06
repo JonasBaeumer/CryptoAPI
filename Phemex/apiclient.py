@@ -150,26 +150,26 @@ class APIClient(object):
         """
         return self._send_request("PUT", "/positions/riskLimit", params={"symbol": symbol, "riskLimit": risk_limit})
 
-    def query_open_orders(self, symbol, start, end, offset, limit, ordStatus):
+    def query_closed_orders(self, symbol, start, end, offset, limit, ordStatus):
         """
         :param symbol: (String) symbol that needs to be queried (f.e. <BTCUSD>)
+        The epoch is the point where the time starts and is platform dependent. On Windows and most Unix systems,
+        the epoch is January 1, 1970, 00:00:00 (UTC) and leap seconds are not counted towards the time in seconds since the epoch.
         :param start: (int) start time range, Epoch millis
         :param end: (int) end time range, Epoch millis
         :param offset: (int) offset to resultset
         :param limit: (int) limit of resultset
         :param ordStatus: (String) order status list filter (<New, Partially filled, Untriggered, Filled, Cancelled>)
-        https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#6210-query-open-orders-by-symbol
+        https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#6210-query-closed-orders-by-symbol
         """
         return self._send_request("GET", "/orders/activeList", params={"symbol": symbol, "start": start, "end": end,
                                                                        "offset": offset, "limit": limit, "ordstatus": ordStatus})
 
-    def query_closed_orders(self, symbol):
+    def query_open_orders(self, symbol):
         """
-        https://github.com/phemex/phemex-api-docs/blob/master/Public-Contract-API-en.md#query-closed-orders-by-symbol
-        :param symbol:
-        :return:
+        https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#6210-query-open-orders-by-symbol
         """
-        return self._send_request("GET", "/exchange/order/list", params={""})
+        return self._send_request("GET", "/orders/activeList", params={"symbol": symbol})
 
     def query_24h_ticker(self, symbol):
         """

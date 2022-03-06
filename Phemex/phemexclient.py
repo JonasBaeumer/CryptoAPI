@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 from datetime import date
 
 from Phemex.apiclient import APIClient
@@ -56,11 +57,11 @@ class PhemexClient(object):
 
             write_to_csv(self.account_balance_doc_path, data=[date.today().strftime("%d.%m.%Y"),
                                                               str(account_number), str(btc_balance), 'BTC'])
-        try:
-            r = self.client.query_account_n_positions("BTC1")
-            print(r)
-        except APIClient.phemexexception.exceptions.PhemexAPIException as e:
-            print(e)
+            try:
+                r = response_client_btc.query_account_n_positions("BTC1")
+                print(r)
+            except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+                print(e)
 
     # Place a new order, priceEp is scaled price, check our API doc for more info about scaling
     # https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#scalingfactors
@@ -149,11 +150,14 @@ class PhemexClient(object):
             print(e)
 
     def get_trade_history(self):
-        try:
-            r = self.client.query_closed_orders()
-            print("response:" + str(r))
-        except APIClient.phemexexception.exceptions.PhemexAPIException as e:
-            print(e)
+
+        for i in range(len(self.clients)):
+
+            try:
+                r = self.clients[i].query_closed_orders("BTCUSD", 0, datetime.now().timestamp(), 0, 0, "Filled")
+                print("response:" + str(r))
+            except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+                print(e)
 
 
 
