@@ -148,6 +148,14 @@ class PhemexClient(object):
         except APIClient.phemexexception.exceptions.PhemexAPIException as e:
             print(e)
 
+    def get_trade_history(self):
+        try:
+            r = self.client.query_closed_orders()
+            print("response:" + str(r))
+        except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+            print(e)
+
+
 
 ########## HELPER METHODS BELOW #########
 

@@ -150,11 +150,26 @@ class APIClient(object):
         """
         return self._send_request("PUT", "/positions/riskLimit", params={"symbol": symbol, "riskLimit": risk_limit})
 
-    def query_open_orders(self, symbol):
+    def query_open_orders(self, symbol, start, end, offset, limit, ordStatus):
         """
+        :param symbol: (String) symbol that needs to be queried (f.e. <BTCUSD>)
+        :param start: (int) start time range, Epoch millis
+        :param end: (int) end time range, Epoch millis
+        :param offset: (int) offset to resultset
+        :param limit: (int) limit of resultset
+        :param ordStatus: (String) order status list filter (<New, Partially filled, Untriggered, Filled, Cancelled>)
         https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#6210-query-open-orders-by-symbol
         """
-        return self._send_request("GET", "/orders/activeList", params={"symbol": symbol})
+        return self._send_request("GET", "/orders/activeList", params={"symbol": symbol, "start": start, "end": end,
+                                                                       "offset": offset, "limit": limit, "ordstatus": ordStatus})
+
+    def query_closed_orders(self, symbol):
+        """
+        https://github.com/phemex/phemex-api-docs/blob/master/Public-Contract-API-en.md#query-closed-orders-by-symbol
+        :param symbol:
+        :return:
+        """
+        return self._send_request("GET", "/exchange/order/list", params={""})
 
     def query_24h_ticker(self, symbol):
         """

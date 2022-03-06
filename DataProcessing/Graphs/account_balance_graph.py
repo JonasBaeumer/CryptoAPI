@@ -16,7 +16,6 @@ class Account_balance_graph(object):
 
     def create_acc_balance_graph(self):
         # reading the CSV file
-        # csv_file = pd.read_csv(self.filepath, index_col=0, parse_dates=True)
         csv_file = pd.read_csv(self.filepath, index_col=0)
 
         # displaying the contents of the CSV file
