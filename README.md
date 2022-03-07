@@ -7,6 +7,8 @@ Official API Documentation of Phemex: https://github.com/phemex/phemex-api-docs/
 
 Official API Documentation MongoDB: https://docs.mongodb.com/drivers/python/
 
+Official API Error Code Documentation of Phemex: https://github.com/phemex/phemex-api-docs/blob/master/TradingErrorCode.md
+
 ## Endpoints
 
 ***
