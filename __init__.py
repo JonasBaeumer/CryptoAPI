@@ -1,4 +1,4 @@
-from Phemex.phemexclient import PhemexClient
+from Clients.Phemex.phemexclient import PhemexClient
 
 if __name__ == '__main__':
     test_client = PhemexClient()

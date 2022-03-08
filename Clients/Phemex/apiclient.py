@@ -1,4 +1,4 @@
-from Phemex.phemexexception.exceptions import PhemexAPIException
+from Clients.Phemex.phemexexception.exceptions import PhemexAPIException
 import hashlib
 import hmac
 from math import trunc

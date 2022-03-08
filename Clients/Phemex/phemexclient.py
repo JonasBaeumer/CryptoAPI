@@ -2,8 +2,8 @@ import csv
 from datetime import datetime
 from datetime import date
 
-from Phemex.apiclient import APIClient
-from Phemex.JournalWriter.writer import Writer
+from Clients.Phemex.apiclient import APIClient
+from DataProcessing.JournalWriter.writer import Writer
 import linecache
 import os
 import sys
