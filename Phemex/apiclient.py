@@ -157,6 +157,8 @@ class APIClient(object):
         the epoch is January 1, 1970, 00:00:00 (UTC) and leap seconds are not counted towards the time in seconds since the epoch.
         :param start: (int) start time range, Epoch millis
         :param end: (int) end time range, Epoch millis
+        offset is the difference to the current price (e.g. we set a range around the current price of trades that we want to see)
+
         :param offset: (int) offset to resultset
         :param limit: (int) limit of resultset
         :param ordStatus: (String) order status list filter (<New, Partially filled, Untriggered, Filled, Cancelled>)

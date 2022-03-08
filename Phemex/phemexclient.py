@@ -58,7 +58,7 @@ class PhemexClient(object):
             write_to_csv(self.account_balance_doc_path, data=[date.today().strftime("%d.%m.%Y"),
                                                               str(account_number), str(btc_balance), 'BTC'])
             try:
-                r = response_client_btc.query_account_n_positions("BTC1")
+                r = response_client_btc
                 print(r)
             except APIClient.phemexexception.exceptions.PhemexAPIException as e:
                 print(e)
@@ -154,7 +154,7 @@ class PhemexClient(object):
         for i in range(len(self.clients)):
 
             try:
-                r = self.clients[i].query_closed_orders("BTCUSD", 0, datetime.now().timestamp(), 0, 0, "Filled")
+                r = self.clients[i].query_closed_orders("BTCUSD", 0, datetime.now().timestamp(), 1000000000000000, 1000000000000000, "Filled")
                 print("response:" + str(r))
             except APIClient.phemexexception.exceptions.PhemexAPIException as e:
                 print(e)
