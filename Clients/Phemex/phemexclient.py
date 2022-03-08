@@ -3,6 +3,7 @@ from datetime import datetime
 from datetime import date
 
 from Clients.Phemex.apiclient import APIClient
+from Clients.Phemex.phemexexception.exceptions import PhemexAPIException
 from DataProcessing.JournalWriter.writer import Writer
 import linecache
 import os
@@ -60,7 +61,7 @@ class PhemexClient(object):
             try:
                 r = response_client_btc
                 print(r)
-            except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+            except PhemexAPIException as e:
                 print(e)
 
     # Place a new order, priceEp is scaled price, check our API doc for more info about scaling
@@ -79,14 +80,14 @@ class PhemexClient(object):
             print("response:" + str(response))
             ordid = response["data"]["orderID"]
             print(ordid)
-        except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+        except PhemexAPIException as e:
             print(e)
 
         # Send replace if this order not filled yet
         try:
             response = self.client.amend_order(APIClient.SYMBOL_BTCUSD, ordid, {"priceEp": 95500000})
             print("response:" + str(response))
-        except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+        except PhemexAPIException as e:
             print(e)
 
     def cancel_single_order(self):
@@ -94,28 +95,28 @@ class PhemexClient(object):
         try:
             r = self.client.cancel_order(APIClient.SYMBOL_BTCUSD, "ordid -> Insert Ord ID here")
             print("response:" + str(r))
-        except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+        except PhemexAPIException as e:
             print(e)
 
     def cancel_all_active_orders(self):
         # Cancel all active orders
         try:
             self.client.cancel_all_normal_orders(APIClient.SYMBOL_BTCUSD)
-        except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+        except PhemexAPIException as e:
             print(e)
 
     def cancel_all_conditional_orders(self):
         # Cancel all conditional orders
         try:
             self.client.cancel_all_untriggered_conditional_orders(APIClient.SYMBOL_BTCUSD)
-        except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+        except PhemexAPIException as e:
             print(e)
 
     def cancel_all_orders(self):
         # Cancel all orders
         try:
             self.client.cancel_all(APIClient.SYMBOL_BTCUSD)
-        except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+        except PhemexAPIException as e:
             print(e)
 
     def set_leverage(self):
@@ -125,7 +126,7 @@ class PhemexClient(object):
             # Set to 10x
             r = self.client.change_leverage(APIClient.SYMBOL_BTCUSD, 10)
             print("response:" + str(r))
-        except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+        except PhemexAPIException as e:
             print(e)
 
     def set_risk_limit(self):  # TODO SET FOR 150 BTC
@@ -133,7 +134,7 @@ class PhemexClient(object):
         try:
             r = self.client.change_risklimit(APIClient.SYMBOL_BTCUSD, 150)
             print("response:" + str(r))
-        except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+        except PhemexAPIException as e:
             print(e)
 
     def get_all_active_orders(self):
@@ -141,12 +142,12 @@ class PhemexClient(object):
         try:
             r = self.client.query_open_orders(APIClient.SYMBOL_BTCUSD)
             print("response:" + str(r))
-        except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+        except PhemexAPIException as e:
             print(e)
 
         try:
             print(self.client.query_24h_ticker("BTCUSD"))
-        except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+        except PhemexAPIException as e:
             print(e)
 
     def get_trade_history(self):
@@ -156,7 +157,7 @@ class PhemexClient(object):
             try:
                 r = self.clients[i].query_closed_orders("BTCUSD", 0, datetime.now().timestamp(), 1000000000000000, 1000000000000000, "Filled")
                 print("response:" + str(r))
-            except APIClient.phemexexception.exceptions.PhemexAPIException as e:
+            except PhemexAPIException as e:
                 print(e)
 
 
