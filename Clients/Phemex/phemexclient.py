@@ -19,8 +19,8 @@ class PhemexClient(object):
     api_secrets = ['0']
     clients = [APIClient()]
     doc_size = None
-    data_doc_path = 'C:/Users/jbaeu/OneDrive/Desktop/Trading/Trading Journal/phemex_login_data.csv'
-    account_balance_doc_path = 'C:/Users/jbaeu/OneDrive/Desktop/Trading/Trading Journal/accumulated_account_balance.csv'
+    data_doc_path = '.../phemex_login_data.csv'
+    account_balance_doc_path = '.../accumulated_account_balance.csv'
 
     def __init__(self):
         self.doc_size = rawcount(self.data_doc_path)
